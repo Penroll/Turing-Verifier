@@ -8,25 +8,21 @@
 import SwiftUI
 import CoreData
 
+//Accepts a set of rules from the user, as well as an input, and runs a turing machine over the values
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
     
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
-    
+    //List of rules
     @State var rules = [Rule(number: 1)]
-    
-    @State var r: Int = 1
     
     var body: some View {
         TabView {
+            //Simulator
             TuringMachine(rules: $rules)
                 .tabItem {
                     Label("Simulation", systemImage: "faxmachine")
                 }
             
+            //List of rules
             Rules(rules: $rules)
                 .tabItem {
                     Label("Rules/Vars", systemImage: "list.bullet")
@@ -37,6 +33,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView().environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ContentView()
     }
 }

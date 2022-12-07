@@ -11,20 +11,25 @@ import SwiftUI
 
 struct Rules: View {
     
+    //List of rules for the simulation
     @Binding var rules: [Rule]
     
+    //Holds the number of rules for this simulation
     @State var numRules: Int = 1
     
     var body: some View {
         VStack {
+            //This navigation view routes each rule displayed to a screen where the user can access the fields
             NavigationView {
-                
+                //Lists each rule
                 List($rules, id: \.self.uuid, editActions: .delete) { rule in
                     NavigationLink("Rule " + String(rule.wrappedValue.number), destination: RuleForm(rule: rule))
                 }
                 .navigationTitle("Rules")
                     .toolbar {
+                        //List of premade rulesets
                         Menu {
+                            //Replaces a binary string with its lexographically next value (e.g. 0, 1, 00, 01, 10, 11, 000...)
                             Button("Binary Increment (HW)") {
                                 binaryIncrement()
                             }
@@ -33,6 +38,7 @@ struct Rules: View {
                         }
                         .padding(.horizontal, 10)
                         
+                        //Clears all current rules
                         Button {
                             rules = []
                             numRules = 0
@@ -41,7 +47,7 @@ struct Rules: View {
                         }
                         .padding(.horizontal, 10)
                         
-                        
+                        //Adds a new, blank rule to the list of rules.
                         Button {
                             numRules += 1
                             rules.append(Rule(number: numRules))
@@ -55,10 +61,8 @@ struct Rules: View {
         }
         
     }
-    func deleteItems(at offsets: IndexSet) {
-        rules.remove(atOffsets: offsets)
-    }
     
+    //Adds rules to replace a binary string with the lexographically next binary string.
     private func binaryIncrement() {
         rules = []
         rules.append(Rule(number: 1, read: "1", oldState: "1", write: "1", newState: "2", move: "R"))
@@ -74,18 +78,21 @@ struct Rules: View {
     }
 }
 
+//Form the edit rule values
 struct RuleForm: View {
     
     @Binding var rule: Rule
     
     var body: some View {
         Form {
+            //Fields to edit the read value, and state the machine must be in for the rule to apply.
             HStack {
                 TextField("Read:", text: $rule.read)
                 Divider()
                 TextField("Old State:", text: $rule.oldState)
 
             }
+            //Fields to edit the written value, new state, and direction of movement
             HStack {
                 TextField("Write:", text: $rule.write)
                 Divider()
@@ -97,14 +104,14 @@ struct RuleForm: View {
     }
 }
 
-
-
+//Exension to compare equality of binding variables
 extension Binding: Equatable where Value: Equatable {
     public static func == (lhs: Binding<Value>, rhs: Binding<Value>) -> Bool {
         return lhs.wrappedValue == rhs.wrappedValue
     }
 }
 
+//Extension to hash the value of a binding variable
 extension Binding: Hashable where Value: Hashable {
     public func hash(into hasher: inout Hasher) {
         self.wrappedValue.hash(into: &hasher)
